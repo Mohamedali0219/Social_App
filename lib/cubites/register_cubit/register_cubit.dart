@@ -1,40 +1,68 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/cubites/register_cubit/register_state.dart';
+import 'package:social_app/model/user_model.dart';
 
 class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
   SocialRegisterCubit() : super(SocialRegisterInitialState());
 
-  // get categoriesModel => null;
-
   static SocialRegisterCubit get(context) => BlocProvider.of(context);
 
-  // ShopLoginModel? loginModel;
+  Future<void> registerUser({
+    required String email,
+    required String password,
+    required String name,
+    required String phone,
+  }) async {
+    emit(SocilaRegisterLoadingState());
 
-  // void userRegister(
-  //     {required String email,
-  //     required String password,
-  //     required String name,
-  //     required String phone}) {
-  //   emit(ShopRegisterLoadingState());
-  //   //! called endpoints
-  //   DioHelper.postData(
-  //     url: register,
-  //     data: {
-  //       'name': name,
-  //       'phone': phone,
-  //       'email': email,
-  //       'password': password,
-  //     },
-  //   ).then((value) {
-  //     //? [value.data] => this all data from json
-  //     loginModel = ShopLoginModel.fromJson(value.data); //? all data in json
-  //     emit(ShopRegisterSuccessState(loginModel));
-  //   }).catchError((error) {
-  //     print(error);
-  //     emit(ShopRegisterErrorState(error.toString()));
-  //   });
-  // }
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((value) {
+        createUser(
+            name: name, phone: phone, email: email, uId: value.user!.uid);
+      });
+      //  emit(SocialRegisterSuccessState()); //! because the indecator is stop to work after go to home layout
+    } on FirebaseAuthException catch (e) {
+      emit(SocialRegisterErrorState(e.message.toString()));
+    } catch (e) {
+      emit(SocialRegisterErrorState('some thing want wrong'));
+    }
+  }
+
+  void createUser({
+    required String name,
+    required String phone,
+    required String email,
+    required String uId,
+  }) {
+    UserModel model = UserModel(
+      name: name,
+      phone: phone,
+      email: email,
+      uId: uId,
+      isEmailVerified: false,
+    );
+
+    //! in this case i set the value in user collection
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .set(
+          model.toMap(),
+        )
+        .then((value) {
+      emit(SocilaRegisterUserSuccessState());
+    }).catchError((error) {
+      emit(SocialRegisterUserErrorState(error.toString()));
+    });
+  }
 
   IconData suffixIcon = Icons.visibility_outlined;
   bool isPassword = true;

@@ -1,9 +1,10 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/cubites/login_cubit/shop_login_cubit.dart';
+import 'package:social_app/constant.dart';
 import 'package:social_app/cubites/register_cubit/register_cubit.dart';
 import 'package:social_app/cubites/register_cubit/register_state.dart';
+import 'package:social_app/layouts/home_layout.dart';
 import 'package:social_app/widgets/defult_buttons.dart';
 import 'package:social_app/widgets/defult_text_formfield.dart';
 
@@ -21,7 +22,25 @@ class SocialRegisterScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => SocialRegisterCubit(),
       child: BlocConsumer<SocialRegisterCubit, SocialRegisterStates>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is SocilaRegisterUserSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('your account created successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            navigatAndReplace(context, const HomeLayout());
+          }
+          if (state is SocialRegisterErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(),
@@ -124,13 +143,13 @@ class SocialRegisterScreen extends StatelessWidget {
                             builder: (context) => defultElevatedButton(
                                   onPressed: () {
                                     if (formKey.currentState!.validate()) {
-                                      // SocialRegisterCubit.get(context)
-                                      //     .userRegister(
-                                      //   name: nameController.text,
-                                      //   phone: phoneController.text,
-                                      //   email: emailController.text,
-                                      //   password: passwordController.text,
-                                      // );
+                                      SocialRegisterCubit.get(context)
+                                          .registerUser(
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                        name: nameController.text,
+                                        phone: phoneController.text,
+                                      );
                                     }
                                   },
                                   text: 'Register',

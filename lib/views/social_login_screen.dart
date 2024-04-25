@@ -2,9 +2,11 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/constant.dart';
-import 'package:social_app/cubites/login_cubit/shop_login_cubit.dart';
-import 'package:social_app/cubites/login_cubit/shop_login_state.dart';
-import 'package:social_app/views/shpo_register_screen.dart';
+import 'package:social_app/cubites/login_cubit/login_cubit.dart';
+import 'package:social_app/cubites/login_cubit/login_state.dart';
+import 'package:social_app/layouts/home_layout.dart';
+import 'package:social_app/service/cache_helper.dart';
+import 'package:social_app/views/social_register_screen.dart';
 import 'package:social_app/widgets/defult_buttons.dart';
 import 'package:social_app/widgets/defult_text_formfield.dart';
 
@@ -18,7 +20,26 @@ class SocialLoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => SocialLoginCubit(),
       child: BlocConsumer<SocialLoginCubit, SocialLoginStates>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is SocialLoginSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('login'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            CacheHelper.saveData(key: 'uId', value: state.uId).then((value) {
+              navigatAndReplace(context, const HomeLayout());
+            });
+          } else if (state is SocialLoginErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('error'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(),
@@ -73,14 +94,14 @@ class SocialLoginScreen extends StatelessWidget {
                             SocialLoginCubit.get(context)
                                 .changePasswordVisibility();
                           },
-                          onFieldSubmitted: (value) {
-                            if (formKey.currentState!.validate()) {
-                              // SocialLoginCubit.get(context).userLogin(
-                              //   email: emailController.text,
-                              //   password: passwordController.text,
-                              // );
-                            }
-                          },
+                          // onFieldSubmitted: (value) {
+                          //   if (formKey.currentState!.validate()) {
+                          //     SocialLoginCubit.get(context).userLogin(
+                          //       email: emailController.text,
+                          //       password: passwordController.text,
+                          //     );
+                          //   }
+                          // },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Your Password';
@@ -95,12 +116,12 @@ class SocialLoginScreen extends StatelessWidget {
                             condition: state is! SocialLoginLoadingState,
                             builder: (context) => defultElevatedButton(
                                   onPressed: () {
-                                    // if (formKey.currentState!.validate()) {
-                                    //   SocialLoginCubit.get(context).userLogin(
-                                    //     email: emailController.text,
-                                    //     password: passwordController.text,
-                                    //   );
-                                    // }
+                                    if (formKey.currentState!.validate()) {
+                                      SocialLoginCubit.get(context).signInUser(
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                      );
+                                    }
                                   },
                                   text: 'Login',
                                 ),
