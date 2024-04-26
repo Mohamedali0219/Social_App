@@ -6,6 +6,7 @@ import 'package:social_app/cubites/social_cubit/social_state.dart';
 import 'package:social_app/model/user_model.dart';
 import 'package:social_app/screens/chats.dart';
 import 'package:social_app/screens/feeds.dart';
+import 'package:social_app/screens/new_post.dart';
 import 'package:social_app/screens/settings.dart';
 import 'package:social_app/screens/users.dart';
 
@@ -14,7 +15,7 @@ class SocialCubit extends Cubit<SocialState> {
 
   static SocialCubit get(context) => BlocProvider.of(context);
 
-  UserModel? userData;
+  UserModel? model;
 
   void getUserData() {
     emit(SocialGetUserLoadingState());
@@ -22,7 +23,7 @@ class SocialCubit extends Cubit<SocialState> {
     FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
       //! value from type documentSnapshot
       print(value.data());
-      userData = UserModel.fromJson(value.data()!);
+      model = UserModel.fromJson(value.data()!);
       emit(SocialGetUserSuccessState());
     }).catchError((error) {
       emit(SocialGetUserErrorState(error.toString()));
@@ -31,16 +32,18 @@ class SocialCubit extends Cubit<SocialState> {
 
   int currentIndex = 0;
 
-  List<Widget> screens = [
-    const FeedsScreen(),
-    const ChatsScreen(),
-    const UsersScreen(),
-    const SettingsScreen(),
+  List<Widget> screens = const [
+    FeedsScreen(),
+    ChatsScreen(),
+    NewPostScreen(),
+    UsersScreen(),
+    SettingsScreen(),
   ];
 
   List<String> titles = [
     'Feeds',
     'Chats',
+    'posts',
     'Users',
     'Settings',
   ];

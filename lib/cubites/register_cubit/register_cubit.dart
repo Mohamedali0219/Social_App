@@ -47,6 +47,11 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates> {
       phone: phone,
       email: email,
       uId: uId,
+      bio: 'write your bio ...',
+      image:
+          'https://media.gettyimages.com/id/1448734171/photo/little-robot-with-heart-shaped-balloon-in-hand-looks-out-of-window.jpg?s=2048x2048&w=gi&k=20&c=9KoI0Uk615vxhy4fF-nsHHvFIG3ziL-oY6K4V3NMzsk=',
+      cover:
+          'https://media.gettyimages.com/id/1448734171/photo/little-robot-with-heart-shaped-balloon-in-hand-looks-out-of-window.jpg?s=2048x2048&w=gi&k=20&c=9KoI0Uk615vxhy4fF-nsHHvFIG3ziL-oY6K4V3NMzsk=',
       isEmailVerified: false,
     );
 
