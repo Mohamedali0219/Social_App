@@ -35,3 +35,7 @@ navigatAndReplace(context, widget) => Navigator.of(context).pushReplacement(
     );
 
 var uId = '';
+
+String kProfileImage = 'profile';
+
+String kCoverImage = 'cover';

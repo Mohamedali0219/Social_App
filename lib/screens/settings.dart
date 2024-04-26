@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconoir_ttf/flutter_iconoir_ttf.dart';
+import 'package:social_app/constant.dart';
 import 'package:social_app/cubites/social_cubit/social_cubit.dart';
 import 'package:social_app/cubites/social_cubit/social_state.dart';
 import 'package:social_app/model/user_model.dart';
+import 'package:social_app/screens/edit_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialCubit, SocialState>(
+    return BlocConsumer<SocialCubit, SocialStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        UserModel userDate = SocialCubit.get(context).model!;
+        UserModel userDate = SocialCubit.get(context).userModel!;
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -83,7 +84,7 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          '100',
+                          '46',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ]),
@@ -93,7 +94,7 @@ class SettingsScreen extends StatelessWidget {
                       onTap: () {},
                       child: Column(children: [
                         Text(
-                          'posts',
+                          'Photos',
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -101,7 +102,7 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          '100',
+                          '15',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ]),
@@ -111,7 +112,7 @@ class SettingsScreen extends StatelessWidget {
                       onTap: () {},
                       child: Column(children: [
                         Text(
-                          'posts',
+                          'Following',
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          '100',
+                          '100K',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ]),
@@ -129,7 +130,7 @@ class SettingsScreen extends StatelessWidget {
                       onTap: () {},
                       child: Column(children: [
                         Text(
-                          'posts',
+                          'followers',
                           style:
                               Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -169,7 +170,9 @@ class SettingsScreen extends StatelessWidget {
                     width: 10.0,
                   ),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      navigatTo(context, const EditProfileScreen());
+                    },
                     style: OutlinedButton.styleFrom(
                         foregroundColor: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(

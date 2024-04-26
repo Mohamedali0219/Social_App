@@ -12,7 +12,7 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialCubit, SocialState>(
+    return BlocConsumer<SocialCubit, SocialStates>(
       listener: (context, state) {
         if (state is SocialNewPostState) {
           navigatTo(context, const NewPostScreen());
