@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconoir_ttf/flutter_iconoir_ttf.dart';
 import 'package:social_app/cubites/social_cubit/social_cubit.dart';
 import 'package:social_app/cubites/social_cubit/social_state.dart';
 import 'package:social_app/widgets/custom_appbar.dart';
+import 'package:social_app/widgets/defult_buttons.dart';
 import 'package:social_app/widgets/defult_text_formfield.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -30,7 +32,7 @@ class EditProfileScreen extends StatelessWidget {
               customAppBar(context: context, title: 'Editi Profile', actions: [
             IconButton(
               onPressed: () {
-                SocialCubit.get(context).updateUser(
+                SocialCubit.get(context).updateUserData(
                   name: nameController.text,
                   bio: bioController.text,
                   phone: phoneController.text,
@@ -50,123 +52,191 @@ class EditProfileScreen extends StatelessWidget {
               width: 5,
             )
           ]),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                if (state is SocialUserUpdateLoadingState)
-                  const LinearProgressIndicator(),
-                SizedBox(
-                  height: 220,
-                  child: Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: [
-                          Align(
-                            alignment: AlignmentDirectional.topCenter,
-                            child: Container(
-                              height: 160,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10),
-                                ),
-                                image: DecorationImage(
-                                  image: corverImage == null
-                                      ? NetworkImage(userDate.cover!)
-                                      : FileImage(corverImage) as ImageProvider,
-                                  fit: BoxFit.fill,
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  if (state is SocialUserUpdateLoadingState)
+                    const LinearProgressIndicator(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 220,
+                    child: Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
+                      children: [
+                        Stack(
+                          alignment: AlignmentDirectional.topEnd,
+                          children: [
+                            Align(
+                              alignment: AlignmentDirectional.topCenter,
+                              child: Container(
+                                height: 160,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                  ),
+                                  image: DecorationImage(
+                                    image: corverImage == null
+                                        ? NetworkImage(userDate.cover!)
+                                        : FileImage(corverImage)
+                                            as ImageProvider,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              child: IconButton(
-                                  onPressed: () {
-                                    SocialCubit.get(context).getCoverImage();
-                                  },
-                                  icon: const Icon(IconoirIcons.camera)),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircleAvatar(
+                                child: IconButton(
+                                    onPressed: () {
+                                      SocialCubit.get(context).getCoverImage();
+                                    },
+                                    icon: const Icon(IconoirIcons.camera)),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Stack(
-                        alignment: AlignmentDirectional.bottomEnd,
-                        children: [
-                          CircleAvatar(
-                            radius: 74,
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            child: CircleAvatar(
-                              radius: 70,
-                              backgroundImage: profileImage == null
-                                  ? NetworkImage(
-                                      userDate.image!,
-                                    )
-                                  : FileImage(profileImage) as ImageProvider,
+                          ],
+                        ),
+                        Stack(
+                          alignment: AlignmentDirectional.bottomEnd,
+                          children: [
+                            CircleAvatar(
+                              radius: 74,
+                              backgroundColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              child: CircleAvatar(
+                                radius: 70,
+                                backgroundImage: profileImage == null
+                                    ? NetworkImage(
+                                        userDate.image!,
+                                      )
+                                    : FileImage(profileImage) as ImageProvider,
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              child: IconButton(
-                                  onPressed: () {
-                                    SocialCubit.get(context).getProfileImage();
-                                  },
-                                  icon: const Icon(IconoirIcons.camera)),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircleAvatar(
+                                child: IconButton(
+                                    onPressed: () {
+                                      SocialCubit.get(context)
+                                          .getProfileImage();
+                                    },
+                                    icon: const Icon(IconoirIcons.camera)),
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                defultTextFormField(
-                  controller: nameController,
-                  hintText: 'Name',
-                  prefixIcon: IconoirIcons.user,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                defultTextFormField(
-                    controller: bioController,
-                    hintText: 'Bio',
-                    prefixIcon: IconoirIcons.infoCircle,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (SocialCubit.get(context).profileImage != null ||
+                      SocialCubit.get(context).coverImage != null)
+                    Row(
+                      children: [
+                        if (SocialCubit.get(context).profileImage != null)
+                          Expanded(
+                            child: Column(
+                              children: [
+                                defultElevatedButton(
+                                  onPressed: () {
+                                    SocialCubit.get(context).uploadProfileImage(
+                                      name: nameController.text,
+                                      bio: bioController.text,
+                                      phone: phoneController.text,
+                                    );
+                                  },
+                                  text: 'upload profile',
+                                ),
+                                if (state
+                                    is SocialProfileUserUpdateLoadingState)
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                if (state
+                                    is SocialProfileUserUpdateLoadingState)
+                                  const LinearProgressIndicator(),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        if (SocialCubit.get(context).coverImage != null)
+                          Expanded(
+                            child: Column(
+                              children: [
+                                if (SocialCubit.get(context).coverImage != null)
+                                  defultElevatedButton(
+                                    onPressed: () {
+                                      SocialCubit.get(context).uploadCoverImage(
+                                        name: nameController.text,
+                                        bio: bioController.text,
+                                        phone: phoneController.text,
+                                      );
+                                    },
+                                    text: 'upload cover',
+                                  ),
+                                if (state is SocialCoverUserUpdateLoadingState)
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                if (state is SocialCoverUserUpdateLoadingState)
+                                  const LinearProgressIndicator(),
+                              ],
+                            ),
+                          )
+                      ],
+                    ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  defultTextFormField(
+                    controller: nameController,
+                    hintText: 'Name',
+                    prefixIcon: IconoirIcons.user,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'please enter your bio';
+                        return 'please enter your name';
                       }
                       return null;
-                    }),
-                const SizedBox(
-                  height: 10,
-                ),
-                defultTextFormField(
-                    controller: phoneController,
-                    hintText: 'phone',
-                    prefixIcon: IconoirIcons.phone,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'please enter your phone';
-                      }
-                      return null;
-                    }),
-              ],
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  defultTextFormField(
+                      controller: bioController,
+                      hintText: 'Bio',
+                      prefixIcon: IconoirIcons.infoCircle,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'please enter your bio';
+                        }
+                        return null;
+                      }),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  defultTextFormField(
+                      controller: phoneController,
+                      hintText: 'phone',
+                      prefixIcon: IconoirIcons.phone,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'please enter your phone';
+                        }
+                        return null;
+                      }),
+                ],
+              ),
             ),
           ),
         );

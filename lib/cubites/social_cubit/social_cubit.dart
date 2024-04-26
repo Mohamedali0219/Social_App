@@ -87,8 +87,13 @@ class SocialCubit extends Cubit<SocialStates> {
     }
   }
 
-  String imageProfileUrl = '';
-  void uploadProfileImage() {
+  // String imageProfileUrl = '';
+  void uploadProfileImage({
+    required String name,
+    required String phone,
+    required String bio,
+  }) {
+    emit(SocialProfileUserUpdateLoadingState());
     FirebaseStorage.instance
         .ref()
         .child('users/${Uri.file(profileImage!.path).pathSegments.last}')
@@ -98,8 +103,9 @@ class SocialCubit extends Cubit<SocialStates> {
         value.ref.getDownloadURL().then((value) {
           //!upload link to firebase storage
           debugPrint(value);
-          imageProfileUrl = value;
-          emit(SocialUploadProfileImageSuccessState());
+          // imageProfileUrl = value;
+          // emit(SocialUploadProfileImageSuccessState()); //!  because the indecator is stop to work for any resone if emit anther state
+          updateUserData(name: name, phone: phone, bio: bio, image: value);
         }).catchError((e) {
           emit(SocialUploadProfileImageErrorState());
         });
@@ -109,19 +115,25 @@ class SocialCubit extends Cubit<SocialStates> {
     });
   }
 
-  String imageCovereUrl = '';
-  void uploadCoverImage() {
+  // String imageCovereUrl = '';
+  void uploadCoverImage({
+    required String name,
+    required String phone,
+    required String bio,
+  }) {
+    emit(SocialCoverUserUpdateLoadingState());
     FirebaseStorage.instance
         .ref()
-        .child('users/${Uri.file(profileImage!.path).pathSegments.last}')
+        .child('users/${Uri.file(coverImage!.path).pathSegments.last}')
         .putFile(coverImage!)
         .then(
       (value) {
         value.ref.getDownloadURL().then((value) {
           //!upload link to firebase storage
           debugPrint(value);
-          imageCovereUrl = value;
-          emit(SocialUploadCoverImageSuccessState());
+          //  imageCovereUrl = value;
+          //  emit(SocialUploadCoverImageSuccessState()); //! because the indecator is stop to work for any resone if emit anther state
+          updateUserData(name: name, phone: phone, bio: bio, cover: value);
         }).catchError((e) {
           emit(SocialUploadCovereImageErrorState());
         });
@@ -134,6 +146,7 @@ class SocialCubit extends Cubit<SocialStates> {
   //! function to upload image to firebase storage
   String imageprofile = ''; //!for test function
   String imagecover = '';
+  //? note according to the single rsponsipility principle
   void uploadImage({imageKind, image, folderName}) {
     FirebaseStorage.instance
         .ref()
@@ -159,36 +172,66 @@ class SocialCubit extends Cubit<SocialStates> {
     });
   }
 
-  void updateUser({
+  // void updateUser({
+  //   required String name,
+  //   required String phone,
+  //   required String bio,
+  // }) {
+  //   emit(SocialUserUpdateLoadingState());
+  //   if (profileImage != null) {
+  //     uploadProfileImage();
+  //   } else if (coverImage != null) {
+  //     uploadCoverImage();
+  //   } else {
+  //     UserModel model = UserModel(
+  //         name: name,
+  //         phone: phone,
+  //         bio: bio,
+  //         //! old values [image,cover,email,uId] to don't give me the null
+  //         image: userModel!.image,
+  //         cover: userModel!.cover,
+  //         email: userModel!.email,
+  //         uId: userModel!.uId,
+  //         isEmailVerified: false);
+  //     FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(userModel!.uId)
+  //         .update(model.toMap())
+  //         .then((value) {
+  //       getUserData(); //! i don't need to emit state becuse getUserData will emit state
+  //     }).catchError((error) {
+  //       emit(SocialUpdateUserErrorState());
+  //     });
+  //   }
+  // }
+
+  void updateUserData({
     required String name,
     required String phone,
     required String bio,
+    String? image,
+    String? cover,
   }) {
     emit(SocialUserUpdateLoadingState());
-    if (profileImage != null) {
-      uploadProfileImage();
-    } else if (coverImage != null) {
-      uploadCoverImage();
-    } else {
-      UserModel model = UserModel(
-          name: name,
-          phone: phone,
-          bio: bio,
-          //! old values [image,cover,email,uId] to don't give me the null
-          image: userModel!.image,
-          cover: userModel!.cover,
-          email: userModel!.email,
-          uId: userModel!.uId,
-          isEmailVerified: false);
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userModel!.uId)
-          .update(model.toMap())
-          .then((value) {
-        getUserData(); //! i don't need to emit state becuse getUserData will emit state
-      }).catchError((error) {
-        emit(SocialUpdateUserErrorState());
-      });
-    }
+    UserModel model = UserModel(
+        name: name,
+        phone: phone,
+        bio: bio,
+        //! old values [image,cover,email,uId] to don't give me the null
+        image: image ?? userModel!.image,
+        cover: cover ?? userModel!.cover,
+        email: userModel!.email,
+        uId: userModel!.uId,
+        isEmailVerified: false);
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userModel!.uId)
+        .update(model.toMap())
+        .then((value) {
+      getUserData(); //! i don't need to emit state becuse getUserData will emit state
+    }).catchError((error) {
+      emit(SocialUpdateUserErrorState());
+    });
   }
 }
