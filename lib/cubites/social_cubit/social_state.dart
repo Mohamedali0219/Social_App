@@ -11,6 +11,22 @@ final class SocialGetUserErrorState extends SocialStates {
   SocialGetUserErrorState(this.error);
 }
 
+final class SocialLikeSuccessState extends SocialStates {}
+
+final class SocialLikeErrorState extends SocialStates {
+  final String error;
+  SocialLikeErrorState(this.error);
+}
+
+final class SocialGetPostsLoadingState extends SocialStates {}
+
+final class SocialGetPostsSuccessState extends SocialStates {}
+
+final class SocialGetPostsErrorState extends SocialStates {
+  final String error;
+  SocialGetPostsErrorState(this.error);
+}
+
 final class BottonNavBarChangeState extends SocialStates {}
 
 final class SocialNewPostState extends SocialStates {}
@@ -42,3 +58,18 @@ class SocialProfileUserUpdateLoadingState extends SocialStates {}
 class SocialCoverUserUpdateLoadingState extends SocialStates {}
 
 class SocialUpdateUserErrorState extends SocialStates {}
+
+//? Posts
+class SocialCreatePostLoadingState extends SocialStates {}
+
+class SocialCreatePostSuccessgState extends SocialStates {}
+
+class SocialCreatePostErrorState extends SocialStates {}
+
+class SocialPostImagePickedSuccessState extends SocialStates {}
+
+class SocialPostImagePickedErrorState extends SocialStates {}
+
+class SocialCreatePostImageLoadingState extends SocialStates {}
+
+class SocialRemovePostImageState extends SocialStates {}

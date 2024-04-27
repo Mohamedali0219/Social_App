@@ -22,14 +22,11 @@ defultElevatedButton({
       ),
     );
 
-deflutTextButton({
-  required onPressed,
-  required String text,
-}) =>
+deflutTextButton({required onPressed, required String text, context}) =>
     TextButton(
       onPressed: onPressed,
       child: Text(
         text,
-        style: const TextStyle(color: Colors.black38, fontSize: 20),
+        style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 20),
       ),
     );

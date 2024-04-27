@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/constant.dart';
 import 'package:social_app/cubites/social_cubit/social_state.dart';
+import 'package:social_app/model/post_model.dart';
 import 'package:social_app/model/user_model.dart';
 import 'package:social_app/screens/chats.dart';
 import 'package:social_app/screens/feeds.dart';
@@ -232,6 +233,111 @@ class SocialCubit extends Cubit<SocialStates> {
       getUserData(); //! i don't need to emit state becuse getUserData will emit state
     }).catchError((error) {
       emit(SocialUpdateUserErrorState());
+    });
+  }
+
+  File? postImage;
+
+  void removePostImage() {
+    postImage = null;
+    emit(SocialRemovePostImageState());
+  }
+
+  Future<void> getPostImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      postImage = File(pickedFile.path);
+      debugPrint(postImage!.path);
+      emit(SocialPostImagePickedSuccessState());
+    } else {
+      debugPrint('No image selected.');
+      emit(SocialPostImagePickedErrorState());
+    }
+  }
+
+  void uploadPostImage({
+    required String dateTime,
+    required String text,
+  }) {
+    emit(SocialCreatePostLoadingState());
+    FirebaseStorage.instance
+        .ref()
+        .child('posts/${Uri.file(postImage!.path).pathSegments.last}')
+        .putFile(postImage!)
+        .then(
+      (value) {
+        value.ref.getDownloadURL().then((value) {
+          createPost(
+            dateTime: dateTime,
+            text: text,
+            postImage: value,
+          );
+        }).catchError((e) {
+          emit(SocialCreatePostErrorState());
+        });
+      },
+    ).catchError((e) {
+      emit(SocialCreatePostErrorState());
+    });
+  }
+
+  void createPost({
+    required String dateTime,
+    required String text,
+    String? postImage,
+  }) {
+    PostModel model = PostModel(
+      name: userModel!.name,
+      image: userModel!.image,
+      uId: userModel!.uId,
+      dateTime: dateTime,
+      text: text,
+      iamgePost: postImage,
+    );
+    emit(SocialCreatePostLoadingState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .add(model.toMap())
+        .then((value) {
+      emit((SocialCreatePostSuccessgState()));
+      getPosts();
+    }).catchError((error) {
+      emit((SocialCreatePostErrorState()));
+    });
+  }
+
+  List<PostModel> posts = [];
+  List<String> postsId = [];
+  List<int> likes = [];
+  void getPosts() {
+    emit(SocialGetPostsLoadingState());
+
+    FirebaseFirestore.instance.collection('posts').get().then((value) {
+      for (var element in value.docs) {
+        element.reference.collection('likes').get().then((value) {
+          likes.add(value.docs.length);
+          postsId.add(element.id);
+          posts.add(PostModel.fromJson(element.data()));
+        }).catchError((e) {});
+      }
+      emit(SocialGetPostsSuccessState());
+    }).catchError((e) {
+      emit(SocialGetPostsErrorState(e.toString()));
+    });
+  }
+
+  void likePost(String postId) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .doc(userModel!.uId)
+        .set({
+      'like': true,
+    }).then((value) {
+      emit(SocialLikeSuccessState());
+    }).catchError((e) {
+      emit(SocialLikeErrorState(e.toString()));
     });
   }
 }
