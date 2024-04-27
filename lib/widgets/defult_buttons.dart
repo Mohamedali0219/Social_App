@@ -27,6 +27,6 @@ deflutTextButton({required onPressed, required String text, context}) =>
       onPressed: onPressed,
       child: Text(
         text,
-        style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 20),
+        // style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 20),
       ),
     );

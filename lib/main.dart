@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/bloc_observer.dart';
@@ -14,9 +15,22 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  var token = await FirebaseMessaging.instance.getToken();
+  debugPrint(token);
+  // handling notifications
+  FirebaseMessaging.onMessage.listen((event) {
+    debugPrint(event.data.toString());
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((event) {
+    debugPrint(event.data.toString());
+  });
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   await CacheHelper.init();
   Bloc.observer = MyBlocObserver();
-  uId = CacheHelper.getData(key: 'uId');
+  //uId = CacheHelper.getData(key: 'uId');
   Widget startWidget;
   if (uId.isNotEmpty) {
     startWidget = const HomeLayout();
@@ -38,7 +52,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => SocialCubit()
               ..getUserData()
-              ..getPosts()),
+              ..getPosts()
+            //   ..getAllUsers(),
+            ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -47,4 +63,11 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> firebaseMessagingBackgroundHandler(
+  RemoteMessage message,
+) async {
+  await Firebase.initializeApp();
+  // showToast(text: message.data.toString(), state: ToastStates.SUCCESS);
 }

@@ -46,6 +46,7 @@ dependencies:
   flutter_iconoir_ttf: ^0.1.0
   image_picker: ^1.1.0
   firebase_storage: ^11.7.4
+  firebase_messaging: ^14.9.1
 
 dev_dependencies:
   flutter_test:
